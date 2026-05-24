@@ -17,7 +17,17 @@ const __dirname = path.dirname(__filename);
 export const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.frontendUrl }));
+const allowedOrigins = new Set([env.frontendUrl, ...env.frontendUrls]);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.has(origin)) return callback(null, true);
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      return callback(new Error('CORS origin not allowed'));
+    }
+  })
+);
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));

@@ -11,6 +11,10 @@ export const env = {
   jwtAccessExpires: process.env.JWT_ACCESS_EXPIRES || '15m',
   jwtRefreshExpires: process.env.JWT_REFRESH_EXPIRES || '7d',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  frontendUrls: (process.env.FRONTEND_URLS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean),
   paymentGatewayProvider: process.env.PAYMENT_GATEWAY_PROVIDER || 'mock',
   paymentWebhookSecret: process.env.PAYMENT_WEBHOOK_SECRET || 'eventhub_webhook_secret',
   supportAlertEmail: process.env.SUPPORT_ALERT_EMAIL || 'suporte@eventhub.com.br'
