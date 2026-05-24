@@ -9,6 +9,8 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/eventhub?schema=public"
+ENV DATABASE_URL=${DATABASE_URL}
 RUN npx prisma generate
 
 EXPOSE 4000
