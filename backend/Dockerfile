@@ -14,4 +14,4 @@ ENV DATABASE_URL=${DATABASE_URL}
 RUN npx prisma generate
 
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+CMD ["sh", "-c", "npx prisma db push && npm run start"]
