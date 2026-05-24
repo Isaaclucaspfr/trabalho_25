@@ -1,0 +1,31 @@
+import { Router } from 'express';
+import authRoutes from './authRoutes.js';
+import userRoutes from './userRoutes.js';
+import eventRoutes from './eventRoutes.js';
+import artistRoutes from './artistRoutes.js';
+import locationRoutes from './locationRoutes.js';
+import ticketRoutes from './ticketRoutes.js';
+import rankingRoutes from './rankingRoutes.js';
+import dashboardRoutes from './dashboardRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
+import albumRoutes from './albumRoutes.js';
+import contactRoutes from './contactRoutes.js';
+import supportRoutes from './supportRoutes.js';
+import platformRoutes from './platformRoutes.js';
+
+const router = Router();
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/events', eventRoutes);
+router.use('/artists', artistRoutes);
+router.use('/locations', locationRoutes);
+router.use('/tickets', ticketRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/ranking', rankingRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/albums', albumRoutes);
+router.use('/contact', contactRoutes);
+router.use('/support', supportRoutes);
+router.use('/platform', platformRoutes);
+
+export default router;

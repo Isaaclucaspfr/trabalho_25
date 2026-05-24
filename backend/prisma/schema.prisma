@@ -1,0 +1,206 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  SOLD_OUT
+  CANCELED
+}
+
+enum TicketStatus {
+  PENDING
+  RESERVED
+  PAID
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
+enum SupportMessageStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
+model User {
+  id             String       @id @default(cuid())
+  name           String
+  email          String       @unique
+  password       String
+  avatar         String?
+  role           UserRole     @default(USER)
+  refreshToken   String?
+  resetToken     String?
+  resetTokenExp  DateTime?
+  deletedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  tickets        Ticket[]
+  payments       Payment[]
+  favorites      Favorite[]
+  eventViews     EventView[]
+  supportMessages SupportMessage[]
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  name           String
+  address        String
+  city           String
+  state          String
+  zipCode        String
+  maxCapacity    Int
+  description    String?
+  latitude       Float?
+  longitude      Float?
+  deletedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  events         Event[]
+}
+
+model Event {
+  id             String       @id @default(cuid())
+  title          String
+  description    String
+  eventDate      DateTime
+  time           String
+  category       String
+  image          String?
+  capacity       Int
+  status         EventStatus  @default(DRAFT)
+  price          Decimal      @db.Decimal(10, 2)
+  highlighted    Boolean      @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  locationId     String
+  location       Location     @relation(fields: [locationId], references: [id])
+  tickets        Ticket[]
+  payments       Payment[]
+  favorites      Favorite[]
+  artists        EventArtist[]
+  views          EventView[]
+}
+
+model Artist {
+  id             String       @id @default(cuid())
+  name           String
+  biography      String?
+  musicGenre     String?
+  image          String?
+  socialLinks    Json?
+  deletedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  events         EventArtist[]
+  albums         Album[]
+}
+
+model EventArtist {
+  eventId        String
+  artistId       String
+  createdAt      DateTime     @default(now())
+  event          Event        @relation(fields: [eventId], references: [id])
+  artist         Artist       @relation(fields: [artistId], references: [id])
+
+  @@id([eventId, artistId])
+}
+
+model Ticket {
+  id             String       @id @default(cuid())
+  code           String       @unique
+  quantity       Int
+  totalValue     Decimal      @db.Decimal(10, 2)
+  status         TicketStatus @default(RESERVED)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  userId         String
+  eventId        String
+  paymentId      String?
+  user           User         @relation(fields: [userId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id])
+  payment        Payment?     @relation(fields: [paymentId], references: [id])
+}
+
+model Favorite {
+  userId         String
+  eventId        String
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id])
+
+  @@id([userId, eventId])
+}
+
+model EventView {
+  id             String       @id @default(cuid())
+  userId         String?
+  eventId        String
+  createdAt      DateTime     @default(now())
+  user           User?        @relation(fields: [userId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id])
+}
+
+model Payment {
+  id             String       @id @default(cuid())
+  gateway        String
+  gatewayPaymentId String?    @unique
+  amount         Decimal      @db.Decimal(10, 2)
+  currency       String       @default("BRL")
+  status         PaymentStatus @default(PENDING)
+  failureReason  String?
+  rawRequest     Json?
+  rawResponse    Json?
+  webhookPayload Json?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  userId         String
+  eventId        String
+  user           User         @relation(fields: [userId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id])
+  tickets        Ticket[]
+}
+
+model Album {
+  id             String       @id @default(cuid())
+  title          String
+  cover          String?
+  streams        BigInt       @default(0)
+  deletedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  artistId       String
+  artist         Artist       @relation(fields: [artistId], references: [id])
+}
+
+model SupportMessage {
+  id             String       @id @default(cuid())
+  name           String
+  email          String
+  subject        String
+  message        String
+  status         SupportMessageStatus @default(NEW)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id])
+}
