@@ -28,15 +28,29 @@ export const eventService = {
   },
 
   async create(data) {
-    const artistIds = data.artistIds || [];
+    const { artistIds = [], ...eventData } = data;
     return eventRepository.create({
-      ...data,
+      ...eventData,
       eventDate: new Date(data.eventDate),
       artists: artistIds.length ? { create: artistIds.map((artistId) => ({ artistId })) } : undefined
     });
   },
 
-  update: (id, data) => eventRepository.update(id, { ...data, eventDate: data.eventDate ? new Date(data.eventDate) : undefined }),
+  async update(id, data) {
+    const { artistIds, ...eventData } = data;
+
+    return eventRepository.update(id, {
+      ...eventData,
+      eventDate: data.eventDate ? new Date(data.eventDate) : undefined,
+      artists:
+        artistIds !== undefined
+          ? {
+              deleteMany: {},
+              create: artistIds.map((artistId) => ({ artistId }))
+            }
+          : undefined
+    });
+  },
   delete: (id) => eventRepository.softDelete(id),
 
   async ranking() {
