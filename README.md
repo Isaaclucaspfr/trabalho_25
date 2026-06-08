@@ -8,8 +8,8 @@ Plataforma fullstack para gerenciamento de eventos, favoritos e reserva/compra d
 - Frontend: React + Vite
 - Auth: JWT (access + refresh)
 - Uploads: Multer
-- ValidaÁ„o: Zod
-- SeguranÁa: Helmet, CORS, Rate Limit, bcrypt
+- Valida√ß√£o: Zod
+- Seguran√ßa: Helmet, CORS, Rate Limit, bcrypt
 - Docs: Swagger
 - Containers: Docker + Docker Compose
 
@@ -37,10 +37,9 @@ docker compose up --build
 - Backend: `http://localhost:4000`
 - Swagger: `http://localhost:4000/api/docs`
 
-## Vari·veis de ambiente backend
-Copie `backend/.env.example` para `backend/.env`.
+## Vari√°veis de ambiente backend
 
-Principais vari·veis:
+Principais vari√°veis:
 - `PORT`
 - `DATABASE_URL`
 - `JWT_ACCESS_SECRET`
