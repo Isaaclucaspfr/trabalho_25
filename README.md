@@ -2,6 +2,11 @@
 
 Plataforma fullstack para gerenciamento de eventos, favoritos e reserva/compra de ingressos.
 
+## Documentacao do codigo
+
+Para entender a arquitetura, a responsabilidade de cada arquivo e o fluxo das
+principais funcionalidades, consulte [`docs/CODIGO_DOCUMENTADO.md`](docs/CODIGO_DOCUMENTADO.md).
+
 ## Stack
 - Backend: Node.js + Express
 - Banco: PostgreSQL + Prisma

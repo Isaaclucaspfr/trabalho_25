@@ -1,0 +1,31 @@
+import { Router } from 'express';
+import authRoutes from './rotas-autenticacao.js';
+import userRoutes from './rotas-usuario.js';
+import eventRoutes from './rotas-evento.js';
+import artistRoutes from './rotas-artista.js';
+import locationRoutes from './rotas-local.js';
+import ticketRoutes from './rotas-ingresso.js';
+import rankingRoutes from './rotas-classificacao.js';
+import dashboardRoutes from './rotas-painel.js';
+import paymentRoutes from './rotas-pagamento.js';
+import albumRoutes from './rotas-album.js';
+import contactRoutes from './rotas-contato.js';
+import supportRoutes from './rotas-suporte.js';
+import platformRoutes from './rotas-plataforma.js';
+
+const router = Router();
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/events', eventRoutes);
+router.use('/artists', artistRoutes);
+router.use('/locations', locationRoutes);
+router.use('/tickets', ticketRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/ranking', rankingRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/albums', albumRoutes);
+router.use('/contact', contactRoutes);
+router.use('/support', supportRoutes);
+router.use('/platform', platformRoutes);
+
+export default router;
