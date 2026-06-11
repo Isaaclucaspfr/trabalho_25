@@ -28,6 +28,7 @@ const { ticketServiceMock, artistServiceMock, contactServiceMock, jwtMock } = vi
 vi.mock('../../src/services/servico-ingresso.js', () => ({ ticketService: ticketServiceMock }));
 vi.mock('../../src/services/servico-artista.js', () => ({ artistService: artistServiceMock }));
 vi.mock('../../src/services/servico-contato.js', () => ({ contactService: contactServiceMock }));
+vi.mock('../../src/config/cliente-banco-dados.js', () => ({ prisma: {} }));
 vi.mock('../../src/utils/gerenciador-token.js', () => ({
   verifyAccessToken: jwtMock.verifyAccessToken,
   verifyRefreshToken: vi.fn(),

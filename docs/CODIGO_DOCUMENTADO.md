@@ -270,6 +270,104 @@ Cada arquivo em `backend/src/validators` descreve o contrato aceito pela API:
 `backend/prisma/popular-banco-dados.js` limpa/preenche dados de demonstracao, incluindo contas,
 locais, artistas, eventos, relacionamentos, ingressos, favoritos, views e albuns.
 
+### Cadastro manual no banco de producao
+
+Use este procedimento quando quiser adicionar ou editar registros diretamente
+no banco de producao sem executar o seed.
+
+#### 1. Copiar a conexao externa
+
+No painel do provedor do PostgreSQL, copie a URL externa do banco. Nao publique
+essa URL no GitHub, em prints ou na documentacao, pois ela contem usuario e
+senha.
+
+Se uma URL for exposta, troque imediatamente as credenciais do banco.
+
+#### 2. Abrir o Prisma Studio
+
+Abra um terminal PowerShell separado e execute:
+
+```powershell
+cd C:\Users\isaac\Documents\trabalho_25\backend
+Remove-Item Env:DATABASE_URL
+$env:DATABASE_URL="URL_EXTERNA_DO_BANCO"
+npx prisma studio
+```
+
+O terminal mostrara um endereco como `http://localhost:5555` ou
+`http://localhost:5556`. Mantenha esse terminal aberto enquanto estiver usando
+o Prisma Studio. Para executar outros comandos, abra um segundo terminal.
+
+O Prisma Studio salva cada inclusao ou alteracao diretamente no banco conectado.
+Nao e necessario executar outro comando para "subir" o registro.
+
+#### 3. Cadastrar na ordem correta
+
+Registros relacionados devem ser criados depois dos registros dos quais
+dependem:
+
+1. `Location`, antes de criar um `Event`.
+2. `Artist`, antes de criar um `EventArtist` ou `Album`.
+3. `Event`, informando um `locationId` existente.
+4. `EventArtist`, informando `eventId` e `artistId` existentes.
+5. `User`, antes de criar `Ticket`, `Payment`, `Favorite` ou mensagens associadas.
+6. `Payment`, antes de vincular um ingresso pelo campo `paymentId`.
+
+Para adicionar somente um evento, normalmente basta:
+
+1. Abrir a tabela `Location` e copiar o ID do local desejado.
+2. Abrir a tabela `Event` e clicar em **Add record**.
+3. Preencher `title`, `description`, `eventDate`, `time`, `category`,
+   `capacity`, `price` e `locationId`.
+4. Usar `PUBLISHED` em `status` para permitir sua exibicao publica.
+5. Manter `deletedAt` vazio.
+6. Usar `highlighted = true` para exibir o evento tambem na pagina inicial.
+7. Salvar o registro.
+
+Para associar artistas, crie um registro em `EventArtist` para cada artista do
+evento. A chave dessa tabela e composta por `eventId` e `artistId`.
+
+#### 4. Verificar no sistema publicado
+
+Confira primeiro a API:
+
+```text
+https://trabalho-25.onrender.com/api/events?limit=100
+```
+
+Depois confira o catalogo:
+
+```text
+https://trabalho-25.vercel.app/events
+```
+
+Se o registro nao aparecer:
+
+- atualize a pagina com `Ctrl + F5`;
+- confira se `status` e `PUBLISHED`;
+- confira se `deletedAt` esta vazio;
+- confira se as chaves estrangeiras apontam para registros existentes;
+- lembre que a pagina inicial mostra somente eventos com `highlighted = true`.
+
+#### 5. Encerrar com seguranca
+
+No terminal do Prisma Studio, pressione `Ctrl + C`. Depois remova a URL do
+banco da sessao do PowerShell:
+
+```powershell
+Remove-Item Env:DATABASE_URL
+```
+
+#### Comandos que nao devem ser usados nesse fluxo
+
+Nao execute `npm run seed` depois de cadastrar manualmente. O seed atual usa
+`deleteMany()` e apaga eventos, ingressos, pagamentos, favoritos, artistas,
+locais e outros dados antes de recriar os registros de demonstracao.
+
+`npm run prisma:deploy` aplica migrations e `npx prisma db push` sincroniza a
+estrutura do schema. Esses comandos nao sao necessarios para adicionar um
+registro manual e nao publicam os dados cadastrados no Studio.
+
 ## 10. Inicializacao do frontend
 
 ### `frontend/src/inicializador-aplicacao.js`

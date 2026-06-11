@@ -119,8 +119,8 @@ model EventArtist {
   eventId        String
   artistId       String
   createdAt      DateTime     @default(now())
-  event          Event        @relation(fields: [eventId], references: [id])
-  artist         Artist       @relation(fields: [artistId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist         Artist       @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   @@id([eventId, artistId])
 }
@@ -137,7 +137,7 @@ model Ticket {
   eventId        String
   paymentId      String?
   user           User         @relation(fields: [userId], references: [id])
-  event          Event        @relation(fields: [eventId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   payment        Payment?     @relation(fields: [paymentId], references: [id])
 }
 
@@ -146,7 +146,7 @@ model Favorite {
   eventId        String
   createdAt      DateTime     @default(now())
   user           User         @relation(fields: [userId], references: [id])
-  event          Event        @relation(fields: [eventId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
 }
@@ -157,7 +157,7 @@ model EventView {
   eventId        String
   createdAt      DateTime     @default(now())
   user           User?        @relation(fields: [userId], references: [id])
-  event          Event        @relation(fields: [eventId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
@@ -176,7 +176,7 @@ model Payment {
   userId         String
   eventId        String
   user           User         @relation(fields: [userId], references: [id])
-  event          Event        @relation(fields: [eventId], references: [id])
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   tickets        Ticket[]
 }
 
